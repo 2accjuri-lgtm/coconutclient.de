@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coconut Launcher</title>
+<meta name="description" content="Coconut Launcher - a lightweight personal launcher for Minecraft: Java Edition. Microsoft sign-in, official game files, low resource usage. No tracking.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='34' r='26' fill='%236b4a2b'/%3E%3Cpath d='M20 18c6-8 18-8 24 0' stroke='%234fbf7a' stroke-width='6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='25' cy='33' r='3' fill='%23f3e9d8'/%3E%3Ccircle cx='39' cy='33' r='3' fill='%23f3e9d8'/%3E%3Ccircle cx='32' cy='43' r='3' fill='%23f3e9d8'/%3E%3C/svg%3E">
+<style>
+  /* Bewusst ohne externe Schriften, Skripte oder Bilder: die Seite laedt nichts von Dritten. */
+  :root {
+    --bg: #f6f3ee;
+    --surface: #ffffff;
+    --surface-2: #efe9df;
+    --line: #e2d9cb;
+    --text: #1f1a14;
+    --muted: #6b6155;
+    --accent: #1f8f4c;
+    --accent-soft: #e2f3e8;
+    --brown: #6b4a2b;
+    --radius: 14px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12100d; --surface: #1b1814; --surface-2: #24201b; --line: #332d25;
+      --text: #efe9df; --muted: #a59a8b; --accent: #4fbf7a; --accent-soft: #17291e; --brown: #c79a6b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12100d; --surface: #1b1814; --surface-2: #24201b; --line: #332d25;
+    --text: #efe9df; --muted: #a59a8b; --accent: #4fbf7a; --accent-soft: #17291e; --brown: #c79a6b;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--accent); }
+  code { font: 0.9em ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--surface-2); padding: 1px 6px; border-radius: 6px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* Sprache: es ist immer nur eine sichtbar */
+  [data-lang="en"] [lang="de"], [data-lang="de"] [lang="en"] { display: none !important; }
+
+  header.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  header.top .wrap { display: flex; align-items: center; gap: 16px; height: 60px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; color: var(--text); text-decoration: none; }
+  .brand svg { width: 28px; height: 28px; }
+  nav.links { display: flex; gap: 18px; margin-left: auto; }
+  nav.links a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav.links a:hover { color: var(--text); }
+  .langs { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .langs button { border: 0; background: none; color: var(--muted); font: inherit; font-size: 13px; padding: 4px 11px; cursor: pointer; }
+  .langs button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+
+  .hero { padding-top: 72px; padding-bottom: 48px; }
+  .hero h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -0.02em; }
+  .hero h1 span { color: var(--accent); }
+  .hero p.lead { font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); max-width: 640px; margin: 0 0 28px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 10px; }
+  .fact { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 14px; }
+  .fact b { color: var(--accent); }
+
+  section { padding: 44px 0; border-top: 1px solid var(--line); }
+  section h2 { font-size: 26px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  section p.sub { color: var(--muted); margin: 0 0 26px; max-width: 700px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .card h3 { margin: 0 0 6px; font-size: 16px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+  .card .ico { width: 34px; height: 34px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; margin-bottom: 12px; }
+  .card .ico svg { width: 19px; height: 19px; }
+
+  ol.flow { list-style: none; counter-reset: s; margin: 0; padding: 0; display: grid; gap: 12px; }
+  ol.flow li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; gap: 14px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+  ol.flow li::before { content: counter(s); width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--bg); display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+  ol.flow b { display: block; }
+  ol.flow span { color: var(--muted); font-size: 15px; }
+  .note { margin-top: 16px; background: var(--accent-soft); border-radius: var(--radius); padding: 14px 16px; font-size: 15px; }
+
+  ul.checks { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 10px; }
+  ul.checks li { padding-left: 30px; position: relative; }
+  ul.checks li::before { content: ""; position: absolute; left: 4px; top: 8px; width: 12px; height: 7px; border-left: 2.5px solid var(--accent); border-bottom: 2.5px solid var(--accent); transform: rotate(-45deg); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th { font-size: 13px; color: var(--muted); font-weight: 600; background: var(--surface-2); }
+  td code { white-space: nowrap; }
+
+  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 14px; }
+  footer .disclaimer { font-size: 13px; margin-top: 8px; }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px; }
+    nav.links { display: none; }
+    .langs { margin-left: auto; }
+    .hero { padding-top: 48px; padding-bottom: 32px; }
+    th, td { padding: 10px 10px; }
+    td code { white-space: normal; word-break: break-all; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="26" fill="#6b4a2b"/><path d="M20 18c6-8 18-8 24 0" stroke="#4fbf7a" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="25" cy="33" r="3" fill="#f3e9d8"/><circle cx="39" cy="33" r="3" fill="#f3e9d8"/><circle cx="32" cy="43" r="3" fill="#f3e9d8"/></svg>
+      Coconut Launcher
+    </a>
+    <nav class="links">
+      <a href="#features"><span lang="en">Features</span><span lang="de">Funktionen</span></a>
+      <a href="#sign-in"><span lang="en">Sign-in</span><span lang="de">Anmeldung</span></a>
+      <a href="#privacy"><span lang="en">Privacy</span><span lang="de">Datenschutz</span></a>
+    </nav>
+    <div class="langs" role="group" aria-label="Language">
+      <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-set-lang="de" aria-pressed="false">DE</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <h1 lang="en">A lightweight launcher for <span>Minecraft: Java Edition</span>.</h1>
+    <h1 lang="de">Ein schlanker Launcher für <span>Minecraft: Java Edition</span>.</h1>
+    <p class="lead" lang="en">Coconut Launcher is a personal project: it signs in with a Microsoft account, starts the official game files and keeps resource usage as low as possible. Everything runs on your own computer.</p>
+    <p class="lead" lang="de">Coconut Launcher ist ein privates Projekt: Er meldet sich mit einem Microsoft-Konto an, startet die offiziellen Spieldateien und hält den Ressourcenverbrauch so niedrig wie möglich. Alles läuft auf dem eigenen Rechner.</p>
+    <div class="facts">
+      <span class="fact" lang="en"><b>~70 MB</b> RAM for the launcher</span>
+      <span class="fact" lang="de"><b>~70 MB</b> RAM für den Launcher</span>
+      <span class="fact" lang="en"><b>&lt; 1 %</b> CPU per idle instance without rendering</span>
+      <span class="fact" lang="de"><b>&lt; 1 %</b> CPU je Instanz ohne Grafik im Leerlauf</span>
+      <span class="fact" lang="en"><b>No</b> tracking, no analytics</span>
+      <span class="fact" lang="de"><b>Kein</b> Tracking, keine Analyse</span>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <h2 lang="en">What it does</h2>
+      <h2 lang="de">Was er kann</h2>
+      <p class="sub" lang="en">Everything a launcher needs, plus a few things for running the game with as little load as possible.</p>
+      <p class="sub" lang="de">Alles, was ein Launcher braucht, und dazu ein paar Dinge, damit das Spiel möglichst wenig Last erzeugt.</p>
+      <div class="grid">
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <h3 lang="en">Microsoft sign-in</h3><h3 lang="de">Microsoft-Anmeldung</h3>
+          <p lang="en">Official Microsoft login with a one-time code. The launcher never sees your password.</p>
+          <p lang="de">Offizieller Microsoft-Login per Einmal-Code. Der Launcher sieht dein Passwort nie.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg></div>
+          <h3 lang="en">Official game files</h3><h3 lang="de">Offizielle Spieldateien</h3>
+          <p lang="en">Game, libraries, assets and the matching Java runtime are downloaded directly from Mojang and checked by checksum.</p>
+          <p lang="de">Spiel, Bibliotheken, Assets und das passende Java kommen direkt von Mojang und werden per Prüfsumme kontrolliert.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <h3 lang="en">Low resource usage</h3><h3 lang="de">Wenig Ressourcen</h3>
+          <p lang="en">Optional Fabric with performance mods from Modrinth, tuned memory settings and a mode that skips rendering entirely.</p>
+          <p lang="de">Optional Fabric mit Performance-Mods von Modrinth, abgestimmte Speichereinstellungen und ein Modus ganz ohne Grafik.</p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+          <h3 lang="en">Local dashboard</h3><h3 lang="de">Lokales Dashboard</h3>
+          <p lang="en">A small web dashboard on your own computer shows FPS, CPU, memory and status of your instances.</p>
+          <p lang="de">Ein kleines Web-Dashboard auf dem eigenen Rechner zeigt FPS, CPU, Speicher und Status der Instanzen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sign-in">
+    <div class="wrap">
+      <h2 lang="en">How the sign-in works</h2>
+      <h2 lang="de">So funktioniert die Anmeldung</h2>
+      <p class="sub" lang="en">The launcher uses Microsoft's device code flow with the scopes <code>XboxLive.signin</code> and <code>offline_access</code>. These are the only steps:</p>
+      <p class="sub" lang="de">Der Launcher nutzt den Gerätecode-Ablauf von Microsoft mit den Berechtigungen <code>XboxLive.signin</code> und <code>offline_access</code>. Das sind alle Schritte:</p>
+      <ol class="flow">
+        <li><div><b lang="en">You get a short code</b><b lang="de">Du bekommst einen kurzen Code</b>
+          <span lang="en">and enter it yourself on microsoft.com/link. Your password is typed only into Microsoft's own page.</span>
+          <span lang="de">und gibst ihn selbst auf microsoft.com/link ein. Dein Passwort tippst du nur auf Microsofts eigener Seite.</span></div></li>
+        <li><div><b lang="en">Microsoft issues a token</b><b lang="de">Microsoft stellt ein Token aus</b>
+          <span lang="en">for Xbox Live sign-in only (<code>login.microsoftonline.com</code>).</span>
+          <span lang="de">nur für die Xbox-Live-Anmeldung (<code>login.microsoftonline.com</code>).</span></div></li>
+        <li><div><b lang="en">Xbox Live and XSTS</b><b lang="de">Xbox Live und XSTS</b>
+          <span lang="en">turn it into an Xbox identity for Minecraft services (<code>user.auth.xboxlive.com</code>, <code>xsts.auth.xboxlive.com</code>).</span>
+          <span lang="de">machen daraus eine Xbox-Identität für die Minecraft-Dienste (<code>user.auth.xboxlive.com</code>, <code>xsts.auth.xboxlive.com</code>).</span></div></li>
+        <li><div><b lang="en">Minecraft access token and profile</b><b lang="de">Minecraft-Token und Profil</b>
+          <span lang="en">The launcher gets a game token and reads your player name and UUID (<code>api.minecraftservices.com</code>).</span>
+          <span lang="de">Der Launcher bekommt ein Spiel-Token und liest Spielername und UUID (<code>api.minecraftservices.com</code>).</span></div></li>
+        <li><div><b lang="en">The game starts</b><b lang="de">Das Spiel startet</b>
+          <span lang="en">The token is handed to the official game process on your computer, exactly like the official launcher does.</span>
+          <span lang="de">Das Token wird an den offiziellen Spielprozess auf deinem Rechner übergeben, genau wie beim offiziellen Launcher.</span></div></li>
+      </ol>
+      <div class="note" lang="en">No other Microsoft or Minecraft APIs are used. The launcher cannot read your e-mail, contacts, purchases or anything else from your account.</div>
+      <div class="note" lang="de">Es werden keine weiteren Microsoft- oder Minecraft-Schnittstellen genutzt. Der Launcher kann weder E-Mails, Kontakte, Käufe noch sonst etwas aus deinem Konto lesen.</div>
+    </div>
+  </section>
+
+  <section id="privacy">
+    <div class="wrap">
+      <h2 lang="en">Privacy</h2>
+      <h2 lang="de">Datenschutz</h2>
+      <p class="sub" lang="en">Short version: your data stays on your computer.</p>
+      <p class="sub" lang="de">Kurz gesagt: Deine Daten bleiben auf deinem Rechner.</p>
+      <ul class="checks" lang="en">
+        <li>Sign-in tokens are stored only in a local file on your computer. Removing the account in the launcher deletes them.</li>
+        <li>There is no Coconut server. Nothing is sent to the developer or to any third party.</li>
+        <li>No telemetry, no analytics, no ads, no crash reporting to anyone.</li>
+        <li>The dashboard is only reachable from your own computer unless you deliberately enable network access, which then requires an access key.</li>
+        <li>This website loads no external fonts, scripts or trackers and sets no cookies.</li>
+      </ul>
+      <ul class="checks" lang="de">
+        <li>Anmelde-Tokens liegen nur in einer lokalen Datei auf deinem Rechner. Entfernst du das Konto im Launcher, sind sie gelöscht.</li>
+        <li>Es gibt keinen Coconut-Server. Nichts wird an den Entwickler oder an Dritte gesendet.</li>
+        <li>Keine Telemetrie, keine Analyse, keine Werbung, keine Absturzberichte an irgendwen.</li>
+        <li>Das Dashboard ist nur vom eigenen Rechner erreichbar, außer du schaltest den Netzwerkzugriff bewusst ein. Dann ist ein Zugangsschlüssel nötig.</li>
+        <li>Diese Webseite lädt keine externen Schriften, Skripte oder Tracker und setzt keine Cookies.</li>
+      </ul>
+      <p lang="en"><b>The launcher only connects to these services:</b></p>
+      <p lang="de"><b>Der Launcher verbindet sich nur mit diesen Diensten:</b></p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th lang="en">Service</th><th lang="de">Dienst</th><th lang="en">Hosts</th><th lang="de">Adressen</th><th lang="en">Why</th><th lang="de">Wofür</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Microsoft / Xbox</td>
+              <td><code>login.microsoftonline.com</code><br><code>user.auth.xboxlive.com</code><br><code>xsts.auth.xboxlive.com</code></td>
+              <td lang="en">Sign-in</td><td lang="de">Anmeldung</td>
+            </tr>
+            <tr>
+              <td>Minecraft</td>
+              <td><code>api.minecraftservices.com</code></td>
+              <td lang="en">Game token and player profile</td><td lang="de">Spiel-Token und Spielerprofil</td>
+            </tr>
+            <tr>
+              <td>Mojang</td>
+              <td><code>piston-meta.mojang.com</code><br><code>piston-data.mojang.com</code><br><code>launchermeta.mojang.com</code><br><code>libraries.minecraft.net</code><br><code>resources.download.minecraft.net</code></td>
+              <td lang="en">Version list, game files, Java runtime, assets</td><td lang="de">Versionsliste, Spieldateien, Java, Assets</td>
+            </tr>
+            <tr>
+              <td>Fabric</td>
+              <td><code>meta.fabricmc.net</code><br><code>maven.fabricmc.net</code></td>
+              <td lang="en">Mod loader (optional)</td><td lang="de">Mod-Loader (optional)</td>
+            </tr>
+            <tr>
+              <td>Modrinth</td>
+              <td><code>api.modrinth.com</code><br><code>cdn.modrinth.com</code></td>
+              <td lang="en">Performance mods (optional)</td><td lang="de">Performance-Mods (optional)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <h2 lang="en">About</h2>
+      <h2 lang="de">Über das Projekt</h2>
+      <p lang="en">Coconut Launcher is developed by a single person for personal use with their own accounts. It is not sold and not publicly distributed.</p>
+      <p lang="de">Coconut Launcher wird von einer einzelnen Person für den privaten Gebrauch mit den eigenen Konten entwickelt. Er wird weder verkauft noch öffentlich verteilt.</p>
+      <p id="contact" hidden>
+        <span lang="en">Contact:</span><span lang="de">Kontakt:</span>
+        <a id="contact-link" href="#"></a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 Coconut Launcher</div>
+    <div class="disclaimer">NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</div>
+  </div>
+</footer>
+
+<script>
+  // Kontaktadresse hier eintragen - leer = Kontaktzeile bleibt ausgeblendet.
+  const CONTACT = '';
+
+  if (CONTACT) {
+    const link = document.getElementById('contact-link');
+    link.href = 'mailto:' + CONTACT;
+    link.textContent = CONTACT;
+    document.getElementById('contact').hidden = false;
+  }
+
+  const root = document.documentElement;
+  function setLang(lang) {
+    root.dataset.lang = lang;
+    root.lang = lang;
+    document.querySelectorAll('[data-set-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.setLang === lang)));
+    try { localStorage.setItem('lang', lang); } catch (e) {}
+  }
+  let saved = null;
+  try { saved = localStorage.getItem('lang'); } catch (e) {}
+  setLang(saved || ((navigator.language || '').toLowerCase().startsWith('de') ? 'de' : 'en'));
+  document.querySelectorAll('[data-set-lang]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.setLang)));
+</script>
+</body>
+</html>
