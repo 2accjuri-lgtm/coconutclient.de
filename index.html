@@ -53,6 +53,8 @@
   nav.links { display: flex; gap: 18px; margin-left: auto; }
   nav.links a { color: var(--muted); text-decoration: none; font-size: 14px; }
   nav.links a:hover { color: var(--text); }
+  .dash { background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: 14px; padding: 7px 14px; border-radius: 999px; white-space: nowrap; }
+  .dash:hover { filter: brightness(1.08); }
   .langs { display: flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
   .langs button { border: 0; background: none; color: var(--muted); font: inherit; font-size: 13px; padding: 4px 11px; cursor: pointer; }
   .langs button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
@@ -120,6 +122,7 @@
       <a href="#sign-in"><span lang="en">Sign-in</span><span lang="de">Anmeldung</span></a>
       <a href="#privacy"><span lang="en">Privacy</span><span lang="de">Datenschutz</span></a>
     </nav>
+    <a class="dash" href="https://app.coconutclient.de/"><span lang="en">Open dashboard</span><span lang="de">Zum Dashboard</span></a>
     <div class="langs" role="group" aria-label="Language">
       <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
       <button type="button" data-set-lang="de" aria-pressed="false">DE</button>
@@ -138,6 +141,8 @@
       <span class="fact" lang="de"><b>~70 MB</b> RAM für den Launcher</span>
       <span class="fact" lang="en"><b>&lt; 1 %</b> CPU per idle instance without rendering</span>
       <span class="fact" lang="de"><b>&lt; 1 %</b> CPU je Instanz ohne Grafik im Leerlauf</span>
+      <a class="dash" href="https://app.coconutclient.de/" lang="en">Open dashboard →</a>
+      <a class="dash" href="https://app.coconutclient.de/" lang="de">Zum Dashboard →</a>
       <span class="fact" lang="en"><b>No</b> tracking, no analytics</span>
       <span class="fact" lang="de"><b>Kein</b> Tracking, keine Analyse</span>
     </div>
@@ -213,14 +218,14 @@
       <p class="sub" lang="en">Short version: your data stays on your computer.</p>
       <p class="sub" lang="de">Kurz gesagt: Deine Daten bleiben auf deinem Rechner.</p>
       <ul class="checks" lang="en">
-        <li>Sign-in tokens are stored only in a local file on your computer. Removing the account in the launcher deletes them.</li>
+        <li>Sign-in tokens are stored only in the launcher's own data folder (on the owner's computer or server). Removing the account in the launcher deletes them.</li>
         <li>There is no Coconut server. Nothing is sent to the developer or to any third party.</li>
         <li>No telemetry, no analytics, no ads, no crash reporting to anyone.</li>
         <li>The dashboard is only reachable from your own computer unless you deliberately enable network access, which then requires an access key.</li>
         <li>This website loads no external fonts, scripts or trackers and sets no cookies.</li>
       </ul>
       <ul class="checks" lang="de">
-        <li>Anmelde-Tokens liegen nur in einer lokalen Datei auf deinem Rechner. Entfernst du das Konto im Launcher, sind sie gelöscht.</li>
+        <li>Anmelde-Tokens liegen nur im Datenordner des Launchers (auf dem Rechner bzw. Server des Betreibers). Entfernst du das Konto im Launcher, sind sie gelöscht.</li>
         <li>Es gibt keinen Coconut-Server. Nichts wird an den Entwickler oder an Dritte gesendet.</li>
         <li>Keine Telemetrie, keine Analyse, keine Werbung, keine Absturzberichte an irgendwen.</li>
         <li>Das Dashboard ist nur vom eigenen Rechner erreichbar, außer du schaltest den Netzwerkzugriff bewusst ein. Dann ist ein Zugangsschlüssel nötig.</li>
@@ -269,8 +274,8 @@
     <div class="wrap">
       <h2 lang="en">About</h2>
       <h2 lang="de">Über das Projekt</h2>
-      <p lang="en">Coconut Launcher is developed by a single person for personal use with their own accounts. It is not sold and not publicly distributed.</p>
-      <p lang="de">Coconut Launcher wird von einer einzelnen Person für den privaten Gebrauch mit den eigenen Konten entwickelt. Er wird weder verkauft noch öffentlich verteilt.</p>
+      <p lang="en">Coconut Launcher is developed by a single person for themselves and a few friends. It is not sold and not publicly distributed. The dashboard requires an account, and new accounts only work after the admin has approved them.</p>
+      <p lang="de">Coconut Launcher wird von einer einzelnen Person für sich und ein paar Freunde entwickelt. Er wird weder verkauft noch öffentlich verteilt. Für das Dashboard braucht man ein Konto; neue Konten funktionieren erst, wenn der Admin sie freischaltet.</p>
       <p id="contact" hidden>
         <span lang="en">Contact:</span><span lang="de">Kontakt:</span>
         <a id="contact-link" href="#"></a>
